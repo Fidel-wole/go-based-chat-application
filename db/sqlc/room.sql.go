@@ -21,3 +21,44 @@ func (q *Queries) CreateRoom(ctx context.Context, name string) (Rooms, error) {
 	err := row.Scan(&i.ID, &i.Name)
 	return i, err
 }
+
+const getRoom = `-- name: GetRoom :one
+SELECT id, name
+FROM rooms
+WHERE id = $1
+`
+
+func (q *Queries) GetRoom(ctx context.Context, id int64) (Rooms, error) {
+	row := q.db.QueryRowContext(ctx, getRoom, id)
+	var i Rooms
+	err := row.Scan(&i.ID, &i.Name)
+	return i, err
+}
+
+const getRooms = `-- name: GetRooms :many
+SELECT id, name
+FROM rooms
+`
+
+func (q *Queries) GetRooms(ctx context.Context) ([]Rooms, error) {
+	rows, err := q.db.QueryContext(ctx, getRooms)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Rooms{}
+	for rows.Next() {
+		var i Rooms
+		if err := rows.Scan(&i.ID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
