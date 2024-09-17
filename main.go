@@ -2,9 +2,10 @@ package main
 
 import (
 	"github.com/Fidel-wole/go-based-chat-application/db"
-	//"github.com/Fidel-wole/go-based-chat-application/routes"
-	"github.com/gin-gonic/gin"
+	"github.com/Fidel-wole/go-based-chat-application/routes"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -16,6 +17,6 @@ func main() {
 			"message": "Welcome to chat-app backend",
 		})
 	})
-	
-	server.Run(":8080") 
+	routes.RegisterRoutes(server)
+	server.Run(":8000") 
 }
